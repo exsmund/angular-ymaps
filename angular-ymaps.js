@@ -107,8 +107,13 @@ angular.module('ymaps', [])
     }
     var self = this;
     ymapsLoader.ready(function(ymaps) {
-        self.addMarker = function(coordinates, properties, options) {
+        self.addMarker = function(coordinates, properties, options, events) {
             var placeMark = new ymaps.Placemark(coordinates, properties, options);
+            if (events) {
+                angular.forEach(events, function (value, key) {
+                    placeMark.events.add(key, value);
+                });
+            }
             $scope.markers.add(placeMark);
 
             return placeMark;
@@ -178,7 +183,8 @@ angular.module('ymaps', [])
             coordinates: '=',
             index: '=',
             properties: '=',
-            options: '='
+            options: '=',
+            events: '='
         },
         link    : function ($scope, elm, attr, mapCtrl) {
             var marker;
@@ -191,7 +197,7 @@ angular.module('ymaps', [])
                     marker.geometry.setCoordinates(coord);
                 }
                 else {
-                    marker = mapCtrl.addMarker(coord, angular.extend({iconContent: $scope.index}, $scope.properties), $scope.options);
+                    marker = mapCtrl.addMarker(coord, angular.extend({iconContent: $scope.index}, $scope.properties), $scope.options, $scope.events);
                 }
             }
 
